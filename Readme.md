@@ -29,8 +29,8 @@ VideoTube is a robust backend for a video hosting service, built with Node.js, E
 
 1.  **Clone the repository**
     ```bash
-    git clone https://github.com/shivanshjoshi08/Learn-Backend.git
-    cd Learn-Backend
+    git clone https://github.com/shivanshjoshi08/VideoTube-Project.git
+    cd VideoTube-Project
     ```
 
 2.  **Install dependencies**
