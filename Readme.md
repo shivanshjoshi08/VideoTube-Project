@@ -1,21 +1,23 @@
 # VideoTube Project
 
-VideoTube is a robust backend for a video hosting service, built with Node.js, Express.js, and MongoDB. It provides a comprehensive set of features for building a full-fledged video sharing platform, including user authentication, video management, playlists, tweets, subscriptions, and more.
+VideoTube is a full-stack video hosting service, featuring a robust Node.js backend and a modern React frontend. It provides a comprehensive set of features including user authentication, video management, playlists, tweets, subscriptions, and a personalized dashboard.
 
 ## 🚀 Features
 
+-   **Full Stack Application**: Seamless integration between Node.js backend and React frontend.
+-   **Modern UI**: Sleek **Dark Theme** with a responsive design.
 -   **User Authentication**: Secure signup, login, logout, and refresh token mechanism using JWT and bcrypt.
+-   **Dashboard**: Comprehensive user dashboard to manage profile, avatar, cover image, password, and view watch history.
 -   **Video Management**: Upload, publish, edit, and delete videos. Support for video files and thumbnails using Cloudinary.
 -   **Tweet System**: Create and manage text-based tweets.
 -   **Subscription System**: Subscribe to channels and view subscriber counts.
 -   **Playlist Management**: Create, update, and delete playlists. Add/remove videos from playlists.
--   **Like System**: Like videos, comments, and tweets.
--   **Comment System**: Add, update, and delete comments on videos.
--   **Dashboard**: View channel statistics (views, subscribers, videos, likes) and manage uploaded videos.
+-   **Like & Comment**: Interact with videos through likes and comments.
 -   **Health Check**: Endpoint to verify the server's health status.
 
 ## 🛠️ Tech Stack
 
+### Backend
 -   **Runtime**: [Node.js](https://nodejs.org/)
 -   **Framework**: [Express.js](https://expressjs.com/)
 -   **Database**: [MongoDB](https://www.mongodb.com/)
@@ -23,7 +25,13 @@ VideoTube is a robust backend for a video hosting service, built with Node.js, E
 -   **Authentication**: [jsonwebtoken](https://github.com/auth0/node-jsonwebtoken), [bcrypt](https://github.com/kelektiv/node.bcrypt.js)
 -   **File Storage**: [Cloudinary](https://cloudinary.com/)
 -   **File Handling**: [Multer](https://github.com/expressjs/multer)
--   **Utilities**: [dotenv](https://github.com/motdotla/dotenv), [cors](https://github.com/expressjs/cors), [cookie-parser](https://github.com/expressjs/cookie-parser)
+
+### Frontend
+-   **Framework**: [React](https://reactjs.org/)
+-   **Build Tool**: [Vite](https://vitejs.dev/)
+-   **Routing**: [React Router](https://reactrouter.com/)
+-   **HTTP Client**: [Axios](https://axios-http.com/)
+-   **Styling**: Vanilla CSS (Dark Theme)
 
 ## ⚙️ Installation & Setup
 
@@ -33,18 +41,16 @@ VideoTube is a robust backend for a video hosting service, built with Node.js, E
     cd VideoTube-Project
     ```
 
-2.  **Install dependencies**
+2.  **Backend Setup**
     ```bash
+    cd backend
     npm install
     ```
-
-3.  **Environment Variables**
-    Create a `.env` file in the root directory and add the following variables:
-
+    Create a `.env` file in the `backend` directory:
     ```env
     PORT=8000
     MONGODB_URL=mongodb+srv://<username>:<password>@<cluster>.mongodb.net
-    CORS_ORIGIN=*
+    CORS_ORIGIN=http://localhost:5173
     
     ACCESS_TOKEN_SECRET=<your_access_token_secret>
     ACCESS_TOKEN_EXPIRY=1d
@@ -55,24 +61,35 @@ VideoTube is a robust backend for a video hosting service, built with Node.js, E
     CLOUDINARY_API_KEY=<your_api_key>
     CLOUDINARY_API_SECRET=<your_api_secret>
     ```
-
-4.  **Run the server**
+    Start the backend:
     ```bash
     npm run dev
     ```
 
+3.  **Frontend Setup**
+    Open a new terminal and navigate to the frontend directory:
+    ```bash
+    cd frontend
+    npm install
+    ```
+    Start the frontend:
+    ```bash
+    npm run dev
+    ```
+
+4.  **Access the Application**
+    Open [http://localhost:5173](http://localhost:5173) in your browser.
+
 ## 🔌 API Endpoints
 
-Here is a quick overview of the main API routes:
-
--   **Users**: `/api/v1/users` (Register, Login, Logout, Profile, History, etc.)
--   **Videos**: `/api/v1/videos` (Upload, Get, Update, Delete, Toggle Publish)
--   **Tweets**: `/api/v1/tweets` (Create, Get User Tweets, Update, Delete)
--   **Subscriptions**: `/api/v1/subscriptions` (Toggle, Get Channels, Get Subscribers)
--   **Playlists**: `/api/v1/playlist` (Create, Add/Remove Video, Get User Playlists)
--   **Comments**: `/api/v1/comments` (Get, Add, Update, Delete)
--   **Likes**: `/api/v1/likes` (Toggle Video/Comment/Tweet Like, Get Liked Videos)
--   **Dashboard**: `/api/v1/dashboard` (Stats, Channel Videos)
+-   **Users**: `/api/v1/users`
+-   **Videos**: `/api/v1/videos`
+-   **Tweets**: `/api/v1/tweets`
+-   **Subscriptions**: `/api/v1/subscriptions`
+-   **Playlists**: `/api/v1/playlist`
+-   **Comments**: `/api/v1/comments`
+-   **Likes**: `/api/v1/likes`
+-   **Dashboard**: `/api/v1/dashboard`
 -   **Healthcheck**: `/api/v1/healthcheck`
 
 ## 🤝 Contributing

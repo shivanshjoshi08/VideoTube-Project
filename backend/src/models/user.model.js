@@ -41,7 +41,7 @@ const userSchema = new Schema({
     ],
     password: {
         type: String,
-        required: [true, 'Passwrod is required']
+        required: [true, 'Password is required']
     },
     refreshToken: {
         type: String,
@@ -65,7 +65,7 @@ userSchema.methods.generateAccessToken = function () {
     return jwt.sign({
         _id: this._id,
         email: this.email,
-        usernaem: this.username,
+        username: this.username,
         fullname: this.fullname,
     },
         process.env.ACCESS_TOKEN_SECRET,
