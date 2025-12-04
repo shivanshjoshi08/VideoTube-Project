@@ -24,12 +24,12 @@ const generateAccessAndRefreshToken = async (userId) => {
 
 const registerUser = asyncHandler(async (req, res) => {
     // get user details from frontend
-    const { fullName, email, username, password } = req.body
+    const { fullname, email, username, password } = req.body
     // console.log("email: ", email);
 
     // validation - not empty
     if (
-        [fullName, email, username, password].some((field) => field?.trim() === "")
+        [fullname, email, username, password].some((field) => field?.trim() === "")
     ) {
         throw new ApiError(400, "All fields are required")
     }
@@ -68,7 +68,7 @@ const registerUser = asyncHandler(async (req, res) => {
 
     // create user object - create entry in DB
     const user = await User.create({
-        fullName,
+        fullname,
         avatar: avatar.url,
         coverImage: coverImage?.url || "",
         email,
@@ -224,7 +224,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
 const changeCurrentPassword = asyncHandler(async (req, res) => {
     const { oldPassword, newPassword } = req.body
 
-    const user = User.findById(req.user?._id)
+    const user = await User.findById(req.user?._id)
     const isPasswordCorrect = await user.isPasswordCorrect(oldPassword)
 
     if (!isPasswordCorrect) {
@@ -248,17 +248,17 @@ const getCurrentUser = asyncHandler(async (req, res) => {
 })
 
 const updateAccountDetails = asyncHandler(async (req, res) => {
-    const { fullName, email } = req.body
+    const { fullname, email } = req.body
 
-    if (!fullName && !email) {
+    if (!fullname && !email) {
         throw new ApiError(400, "All fields are required")
     }
 
-    const user = User.findByIdAndUpdate(
+    const user = await User.findByIdAndUpdate(
         req.user?._id,
         {
             $set: {
-                fullName,
+                fullname,
                 email: email,
 
             }
@@ -280,7 +280,7 @@ const updateUserAvatar = asyncHandler(async (req, res) => {
 
     const avatar = await uploadOnCloudinary(avatarLocalPath)
 
-    if (!avatar.url) {
+    if (!avatar?.url) {
         throw new ApiError(400, "Error while uploading on avatar")
     }
 
@@ -294,11 +294,11 @@ const updateUserAvatar = asyncHandler(async (req, res) => {
         {
             new: true
 
-        }.select("-password")
-    )
+        }
+    ).select("-password")
 
     return res
-        .statsu(200)
+        .status(200)
         .json(
             new ApiResponse(200, user, "avatar updated successfully")
         )
@@ -327,11 +327,11 @@ const updateUserCoverImage = asyncHandler(async (req, res) => {
         {
             new: true
 
-        }.select("-password")
-    )
+        }
+    ).select("-password")
 
     return res
-        .statsu(200)
+        .status(200)
         .json(
             new ApiResponse(200, user, "cover image updated successfully")
         )
@@ -387,7 +387,7 @@ const getUserChannelProfile = asyncHandler(async (req, res) => {
         },
         {
             $project: {
-                fullName: 1,
+                fullname: 1,
                 username: 1,
                 subscribersCount: 1,
                 channelsSubscribedToCount: 1,
@@ -433,7 +433,7 @@ const getWatchHistory = asyncHandler(async (req, res) => {
                             pipeline: [
                                 {
                                     $project: {
-                                        fullName: 1,
+                                        fullname: 1,
                                         username: 1,
                                         avatar: 1
                                     }

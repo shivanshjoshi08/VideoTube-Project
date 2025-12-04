@@ -11,10 +11,20 @@ dotenv.config({
 // const app = express();
 connectDB()
     .then(() => {
-        app.listen(process.env.PORT || 8000, () => {
-            console.log(`⚙️ Server is running at port : ${process.env.PORT}`);
+        const port = process.env.PORT || 8000;
+        const server = app.listen(port, () => {
+            console.log(`⚙️ Server is running at port : ${port}`);
+        });
 
-        })
+        server.on('error', (err) => {
+            if (err && err.code === 'EADDRINUSE') {
+                console.error(`Port ${port} is already in use. Close the other process or set a different PORT.`);
+                process.exit(1);
+            } else {
+                console.error('Server error', err);
+                process.exit(1);
+            }
+        });
     })
     .catch((error) => {
         console.log("MONGO DB Connection failed !!! ", error);
@@ -29,7 +39,7 @@ const app = express()
 
     (async () => {
         try {
-            await mongoose.connect(`${process.env.MONGODB_URI}/${DB_NAME}`)
+            await mongoose.connect(`${process.env.MONGODB_URL}/${DB_NAME}`)
             app.on("error", (error) => {
                 console.log("ERROR", error);
                 throw error
