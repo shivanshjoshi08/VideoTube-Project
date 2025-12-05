@@ -26,7 +26,8 @@ function Upload() {
                 },
             });
             setUploading(false);
-            navigate('/');
+            alert('Video uploaded successfully!');
+            navigate('/dashboard');
         } catch (error) {
             console.error('Upload failed', error);
             setUploading(false);

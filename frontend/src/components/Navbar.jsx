@@ -26,6 +26,7 @@ function Navbar() {
                 {accessToken ? (
                     <>
                         <Link to="/dashboard">Dashboard</Link>
+                        <Link to="/settings">Settings</Link>
                         <Link to="/upload">Upload</Link>
                         <button onClick={handleLogout}>Logout</button>
                     </>

@@ -26,7 +26,7 @@ const registerUser = asyncHandler(async (req, res) => {
     // get user details from frontend
     const { fullname, email, username, password } = req.body
     // console.log("email: ", email);
-    // console.log(req.files)
+    // console.log(req.query)
     // validation - not empty
     if (
         [fullname, email, username, password].some((field) => field?.trim() === "")
@@ -89,9 +89,11 @@ const registerUser = asyncHandler(async (req, res) => {
     }
 
     // return response
-    return res.status(201).json(
-        new ApiResponse(200, createdUser, "User registered successfully")
-    )
+    return res
+        .status(201)
+        .json(
+            new ApiResponse(200, createdUser, "User registered successfully")
+        )
 })
 
 const loginUser = asyncHandler(async (req, res) => {
@@ -404,7 +406,6 @@ const getUserChannelProfile = asyncHandler(async (req, res) => {
         .json(new ApiResponse(200, channel[0], "User channel fetched successfully"))
 
 })
-
 
 const getWatchHistory = asyncHandler(async (req, res) => {
     const user = await User.aggregate([
