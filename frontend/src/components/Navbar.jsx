@@ -20,8 +20,9 @@ function Navbar() {
 
     const handleSearch = (e) => {
         e.preventDefault();
-        // Implement search navigation if needed, for now just log
-        console.log("Searching for:", searchQuery);
+        if (searchQuery.trim()) {
+            navigate(`/search?query=${encodeURIComponent(searchQuery)}`);
+        }
     };
 
     return (

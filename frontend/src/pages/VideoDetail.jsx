@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import videoService from '../services/video.service';
+import likeService from '../services/like.service';
+import subscriptionService from '../services/subscription.service';
 
 function VideoDetail() {
     const { videoId } = useParams();
@@ -8,6 +10,11 @@ function VideoDetail() {
     const [relatedVideos, setRelatedVideos] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [isSubscribed, setIsSubscribed] = useState(false);
+    const [isLiked, setIsLiked] = useState(false);
+    const [likeCount, setLikeCount] = useState(0);
+    const [subscriberCount, setSubscriberCount] = useState(0);
+    const [actionLoading, setActionLoading] = useState(false);
 
     useEffect(() => {
         const fetchVideoAndRelated = async () => {
@@ -15,6 +22,15 @@ function VideoDetail() {
                 setLoading(true);
                 const response = await videoService.getVideoById(videoId);
                 setVideo(response.data.data);
+                setLikeCount(response.data.data.likesCount || 0);
+
+                // Fetch subscriber count
+                try {
+                    const subRes = await subscriptionService.getUserChannelSubscribers(response.data.data.owner._id);
+                    setSubscriberCount(subRes.data.data.length || 0);
+                } catch (err) {
+                    console.error('Error fetching subscribers', err);
+                }
 
                 // Fetch related videos
                 try {
@@ -39,12 +55,32 @@ function VideoDetail() {
         }
     }, [videoId]);
 
-    const handleLike = () => {
-        alert("Like feature coming soon! (Backend not implemented)");
+    const handleLike = async () => {
+        try {
+            setActionLoading(true);
+            await likeService.toggleVideoLike(videoId);
+            setIsLiked(!isLiked);
+            setLikeCount(isLiked ? likeCount - 1 : likeCount + 1);
+        } catch (error) {
+            console.error('Error toggling like:', error);
+            alert('Failed to like video');
+        } finally {
+            setActionLoading(false);
+        }
     };
 
-    const handleSubscribe = () => {
-        alert("Subscribe feature coming soon! (Backend not implemented)");
+    const handleSubscribe = async () => {
+        try {
+            setActionLoading(true);
+            await subscriptionService.toggleSubscription(video.owner._id);
+            setIsSubscribed(!isSubscribed);
+            setSubscriberCount(isSubscribed ? subscriberCount - 1 : subscriberCount + 1);
+        } catch (error) {
+            console.error('Error toggling subscription:', error);
+            alert('Failed to toggle subscription');
+        } finally {
+            setActionLoading(false);
+        }
     };
 
     if (loading) {
@@ -87,8 +123,16 @@ function VideoDetail() {
                             </div>
                         </div>
                         <div className="video-actions">
-                            <button onClick={handleLike} title="Like">
-                                👍 Like
+                            <button 
+                                onClick={handleLike} 
+                                title="Like"
+                                disabled={actionLoading}
+                                style={{ 
+                                    backgroundColor: isLiked ? 'rgba(255, 0, 0, 0.2)' : 'var(--yt-hover)',
+                                    color: isLiked ? 'var(--yt-brand-color)' : 'var(--yt-text-primary)'
+                                }}
+                            >
+                                👍 {likeCount}
                             </button>
                             <button title="Dislike">
                                 👎 Dislike
@@ -111,11 +155,20 @@ function VideoDetail() {
                             />
                             <div className="channel-details">
                                 <h4>{video.owner?.fullName}</h4>
-                                <p>@{video.owner?.username} • 1.2M subscribers</p>
+                                <p>@{video.owner?.username} • {subscriberCount.toLocaleString()} subscribers</p>
                             </div>
                         </div>
-                        <button className="btn-primary" onClick={handleSubscribe}>
-                            Subscribe
+                        <button 
+                            className="btn-primary" 
+                            onClick={handleSubscribe}
+                            disabled={actionLoading}
+                            style={{
+                                backgroundColor: isSubscribed ? 'var(--yt-hover)' : 'var(--yt-brand-color)',
+                                color: isSubscribed ? 'var(--yt-text-primary)' : '#fff',
+                                border: isSubscribed ? '1px solid var(--yt-border)' : 'none'
+                            }}
+                        >
+                            {isSubscribed ? '✓ Subscribed' : 'Subscribe'}
                         </button>
                     </div>
 

@@ -10,6 +10,8 @@ import VideoDetail from './pages/VideoDetail';
 import Dashboard from './pages/Dashboard';
 import Settings from './pages/Settings';
 import ChannelProfile from './pages/ChannelProfile';
+import SearchResults from './pages/SearchResults';
+import History from './pages/History';
 
 function App() {
   return (
@@ -28,6 +30,8 @@ function App() {
               <Route path="/upload" element={<Upload />} />
               <Route path="/video/:videoId" element={<VideoDetail />} />
               <Route path="/c/:username" element={<ChannelProfile />} />
+              <Route path="/search" element={<SearchResults />} />
+              <Route path="/history" element={<History />} />
             </Routes>
           </main>
         </div>

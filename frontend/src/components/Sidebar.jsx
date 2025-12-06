@@ -12,11 +12,11 @@ function Sidebar() {
                 <span className="sidebar-icon">🏠</span>
                 <span className="sidebar-label">Home</span>
             </Link>
-            <div className="sidebar-link">
+            <div className="sidebar-link" title="Coming Soon">
                 <span className="sidebar-icon">⚡</span>
                 <span className="sidebar-label">Shorts</span>
             </div>
-            <div className="sidebar-link">
+            <div className="sidebar-link" title="Coming Soon">
                 <span className="sidebar-icon">📺</span>
                 <span className="sidebar-label">Subscriptions</span>
             </div>
@@ -29,14 +29,14 @@ function Sidebar() {
                 <span className="sidebar-icon">📤</span>
                 <span className="sidebar-label">Upload</span>
             </Link>
-            <div className="sidebar-link">
+            <div className="sidebar-link" title="Coming Soon">
                 <span className="sidebar-icon">📁</span>
                 <span className="sidebar-label">Library</span>
             </div>
-            <div className="sidebar-link">
+            <Link to="/history" className="sidebar-link" style={isActive('/history') ? activeStyle : {}}>
                 <span className="sidebar-icon">🕒</span>
                 <span className="sidebar-label">History</span>
-            </div>
+            </Link>
             <hr style={{ borderColor: 'var(--yt-border)', margin: '12px 0' }} />
             <Link to="/settings" className="sidebar-link" style={isActive('/settings') ? activeStyle : {}}>
                 <span className="sidebar-icon">⚙️</span>

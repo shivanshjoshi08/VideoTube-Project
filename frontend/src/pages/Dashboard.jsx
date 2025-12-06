@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import videoService from '../services/video.service';
 import authService from '../services/auth.service';
+import dashboardService from '../services/dashboard.service';
 import tweetService from '../services/tweet.service';
-import VideoCard from '../components/VideoCard';
+import DashboardVideoCard from '../components/DashboardVideoCard';
 
 function Dashboard() {
     const [activeTab, setActiveTab] = useState('videos');
@@ -57,20 +58,25 @@ function Dashboard() {
     };
 
     const fetchChannelStats = async () => {
-        // Backend dashboard stats are not implemented
-        setStats({
-            totalVideos: 0,
-            totalViews: 0,
-            totalSubscribers: 0,
-            totalLikes: 0
-        });
+        try {
+            const response = await dashboardService.getChannelStats();
+            setStats(response.data.data);
+        } catch (error) {
+            console.error('Error fetching stats', error);
+            setStats({
+                totalVideos: 0,
+                totalViews: 0,
+                totalSubscribers: 0,
+                totalLikes: 0
+            });
+        }
     };
 
     const fetchChannelVideos = async () => {
         if (!user?._id) return;
         try {
-            const response = await videoService.getAllVideos({ userId: user._id });
-            setVideos(response.data.data.docs || []);
+            const response = await dashboardService.getChannelVideos();
+            setVideos(response.data.data || []);
         } catch (error) {
             console.error('Error fetching videos', error);
         }
@@ -262,10 +268,22 @@ function Dashboard() {
                         <div className="video-grid">
                             {videos.length > 0 ? (
                                 videos.map((video) => (
-                                    <VideoCard key={video._id} video={video} />
+                                    <DashboardVideoCard 
+                                        key={video._id} 
+                                        video={video}
+                                        onDelete={(videoId) => setVideos(videos.filter(v => v._id !== videoId))}
+                                        onUpdate={(updatedVideo) => {
+                                            setVideos(videos.map(v => v._id === updatedVideo._id ? updatedVideo : v));
+                                            fetchChannelStats();
+                                        }}
+                                    />
                                 ))
                             ) : (
-                                <p>No videos uploaded yet.</p>
+                                <div className="empty-state" style={{ gridColumn: '1 / -1' }}>
+                                    <div className="empty-state-icon">📹</div>
+                                    <h3>No videos yet</h3>
+                                    <p>Start by uploading your first video</p>
+                                </div>
                             )}
                         </div>
                     </div>
