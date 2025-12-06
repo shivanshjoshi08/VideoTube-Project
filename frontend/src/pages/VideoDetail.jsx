@@ -1,72 +1,164 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import videoService from '../services/video.service';
 
 function VideoDetail() {
     const { videoId } = useParams();
     const [video, setVideo] = useState(null);
+    const [relatedVideos, setRelatedVideos] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        const fetchVideo = async () => {
+        const fetchVideoAndRelated = async () => {
             try {
                 setLoading(true);
                 const response = await videoService.getVideoById(videoId);
                 setVideo(response.data.data);
+
+                // Fetch related videos
+                try {
+                    const relatedRes = await videoService.getAllVideos({ limit: 10 });
+                    const filtered = relatedRes.data.data.docs.filter(v => v._id !== videoId);
+                    setRelatedVideos(filtered.slice(0, 8));
+                } catch (err) {
+                    console.error('Error fetching related videos', err);
+                }
+
                 setError(null);
-            } catch (err) {
-                console.error('Error fetching video', err);
-                setError(err.response?.data?.message || 'Error loading video');
+            } catch (error) {
+                console.error('Error fetching video', error);
+                setError('Failed to load video');
             } finally {
                 setLoading(false);
             }
         };
 
         if (videoId) {
-            fetchVideo();
+            fetchVideoAndRelated();
         }
     }, [videoId]);
 
-    if (loading) return <div className="video-detail-container"><p>Loading video...</p></div>;
-    if (error) return <div className="video-detail-container"><p style={{ color: 'var(--error-color)' }}>{error}</p></div>;
-    if (!video) return <div className="video-detail-container"><p>Video not found</p></div>;
+    const handleLike = () => {
+        alert("Like feature coming soon! (Backend not implemented)");
+    };
 
-    return (
-        <div className="video-detail-container">
-            <video
-                src={video.videoFile}
-                controls
-                autoPlay
-                className="video-player"
-                style={{ width: '100%', borderRadius: '12px' }}
-            />
-            <h2 style={{ marginTop: '1.5rem' }}>{video.title}</h2>
-            <p style={{ color: 'var(--text-secondary)', marginBottom: '1rem' }}>{video.description}</p>
-            <div className="video-meta">
-                <div>
-                    <p><strong>Views:</strong> {video.views?.toLocaleString() || 0}</p>
-                    <p><strong>Uploaded:</strong> {new Date(video.createdAt).toLocaleDateString()}</p>
-                    <div className="video-actions">
-                        {/* Backend Like/Subscribe controllers are not fully implemented yet, showing static buttons */}
-                        <button className="btn-action" disabled>Like</button>
-                        <button className="btn-action" disabled>Subscribe</button>
-                    </div>
-                </div>
-                <div>
-                    <p><strong>Uploaded by:</strong> {video.owner?.fullname || video.owner?.username}</p>
-                    {video.owner?.avatar && (
-                        <img
-                            src={video.owner.avatar}
-                            alt={video.owner.username}
-                            style={{ width: '40px', height: '40px', borderRadius: '50%', marginTop: '0.5rem' }}
-                        />
-                    )}
+    const handleSubscribe = () => {
+        alert("Subscribe feature coming soon! (Backend not implemented)");
+    };
+
+    if (loading) {
+        return (
+            <div className="app-content">
+                <div className="loading">Loading video...</div>
+            </div>
+        );
+    }
+
+    if (error || !video) {
+        return (
+            <div className="app-content">
+                <div className="error-message" style={{ margin: '1.5rem' }}>
+                    {error || 'Video not found'}
                 </div>
             </div>
-            <div className="comments-section" style={{ marginTop: '2rem' }}>
-                <h3>Comments</h3>
-                <p>Comments are coming soon!</p>
+        );
+    }
+
+    return (
+        <div className="app-content">
+            <div className="video-detail-container">
+                {/* Main Video Section */}
+                <div className="video-player-section">
+                    <video
+                        src={video.videoFile}
+                        controls
+                        autoPlay
+                        className="video-player"
+                    ></video>
+
+                    {/* Video Metadata */}
+                    <div className="video-meta">
+                        <div className="video-meta-left">
+                            <h1>{video.title}</h1>
+                            <div className="video-meta-stats">
+                                <span>{video.views} views</span>
+                                <span>{new Date(video.createdAt).toLocaleDateString()}</span>
+                            </div>
+                        </div>
+                        <div className="video-actions">
+                            <button onClick={handleLike} title="Like">
+                                👍 Like
+                            </button>
+                            <button title="Dislike">
+                                👎 Dislike
+                            </button>
+                            <button title="Share">
+                                ↗️ Share
+                            </button>
+                            <button title="Save">
+                                🔖 Save
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Channel Section */}
+                    <div className="video-channel-section">
+                        <div className="channel-info">
+                            <img
+                                src={video.owner?.avatar || 'https://via.placeholder.com/50'}
+                                alt={video.owner?.username}
+                            />
+                            <div className="channel-details">
+                                <h4>{video.owner?.fullName}</h4>
+                                <p>@{video.owner?.username} • 1.2M subscribers</p>
+                            </div>
+                        </div>
+                        <button className="btn-primary" onClick={handleSubscribe}>
+                            Subscribe
+                        </button>
+                    </div>
+
+                    {/* Description */}
+                    <div className="video-description">
+                        {video.description}
+                    </div>
+
+                    {/* Comments Section */}
+                    <div style={{ marginTop: '2rem', paddingTop: '2rem', borderTop: '1px solid var(--yt-border)' }}>
+                        <h3 style={{ marginBottom: '1rem' }}>Comments</h3>
+                        <p style={{ color: 'var(--yt-text-secondary)' }}>Comments feature coming soon! (Backend not implemented)</p>
+                    </div>
+                </div>
+
+                {/* Sidebar - Related Videos */}
+                <div className="related-videos-section">
+                    <h3>Recommended</h3>
+                    {relatedVideos.length === 0 ? (
+                        <p style={{ color: 'var(--yt-text-secondary)', fontSize: '0.9rem' }}>No related videos</p>
+                    ) : (
+                        relatedVideos.map((relatedVideo) => (
+                            <a
+                                key={relatedVideo._id}
+                                href={`/video/${relatedVideo._id}`}
+                                style={{ textDecoration: 'none', color: 'inherit' }}
+                            >
+                                <div className="related-video-item">
+                                    <img
+                                        src={relatedVideo.thumbnail || 'https://via.placeholder.com/100x56'}
+                                        alt={relatedVideo.title}
+                                        className="related-video-thumbnail"
+                                    />
+                                    <div className="related-video-info">
+                                        <h4>{relatedVideo.title}</h4>
+                                        <p>{relatedVideo.owner?.username}</p>
+                                        <p>{relatedVideo.views} views</p>
+                                    </div>
+                                </div>
+                            </a>
+                        ))
+                    )}
+                </div>
             </div>
         </div>
     );

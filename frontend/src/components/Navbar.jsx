@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 function Navbar() {
     const { currentUser, logout } = useAuth();
+    const navigate = useNavigate();
+    const [searchQuery, setSearchQuery] = useState('');
 
     const handleLogout = async () => {
         try {
@@ -16,30 +18,54 @@ function Navbar() {
         }
     };
 
+    const handleSearch = (e) => {
+        e.preventDefault();
+        // Implement search navigation if needed, for now just log
+        console.log("Searching for:", searchQuery);
+    };
+
     return (
         <nav className="navbar">
-            <div className="navbar-brand">
-                <Link to="/">VideoTube</Link>
+            <div className="navbar-start">
+                <button className="nav-icon-btn">☰</button>
+                <Link to="/" className="navbar-brand">
+                    <span className="navbar-logo-icon">▶</span>
+                    <span>VideoTube</span>
+                </Link>
             </div>
-            <div className="navbar-links">
+
+            <div className="navbar-center">
+                <form className="search-box" onSubmit={handleSearch}>
+                    <input
+                        type="text"
+                        placeholder="Search"
+                        className="search-input"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                    />
+                    <button type="submit" className="search-btn">🔍</button>
+                </form>
+            </div>
+
+            <div className="navbar-end">
                 {currentUser ? (
                     <>
-                        <Link to="/dashboard">Dashboard</Link>
-                        <Link to="/settings">Settings</Link>
-                        <Link to="/upload">Upload</Link>
-                        {currentUser.avatar && (
-                            <img
-                                src={currentUser.avatar}
-                                alt="avatar"
-                                style={{ width: '30px', height: '30px', borderRadius: '50%', objectFit: 'cover', verticalAlign: 'middle', marginLeft: '10px' }}
-                            />
-                        )}
-                        <button onClick={handleLogout}>Logout</button>
+                        <Link to="/upload" className="nav-icon-btn" title="Create">📹</Link>
+                        <button className="nav-icon-btn" title="Notifications">🔔</button>
+                        <div className="user-avatar-btn" onClick={handleLogout} title="Logout">
+                            {currentUser.avatar ? (
+                                <img src={currentUser.avatar} alt="avatar" />
+                            ) : (
+                                <div style={{ width: '100%', height: '100%', background: '#555' }}></div>
+                            )}
+                        </div>
                     </>
                 ) : (
                     <>
-                        <Link to="/login">Login</Link>
-                        <Link to="/register">Register</Link>
+                        <button className="nav-icon-btn">⋮</button>
+                        <Link to="/login" className="btn-primary" style={{ borderRadius: '20px', padding: '6px 16px', border: '1px solid #3ea6ff', background: 'none', color: '#3ea6ff', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            👤 <span style={{ fontSize: '0.9rem' }}>Sign in</span>
+                        </Link>
                     </>
                 )}
             </div>

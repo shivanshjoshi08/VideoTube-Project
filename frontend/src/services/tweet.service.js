@@ -1,13 +1,12 @@
-
-import api from "../utils/api.js";
+import api from '../utils/api';
 
 class TweetService {
     async createTweet(content) {
         return api.post("/tweets", { content });
     }
 
-    async getUserTweets(userId) {
-        return api.get(`/tweets/user/${userId}`);
+    async getUserTweets() {
+        return api.get("/tweets/user");
     }
 
     async updateTweet(tweetId, content) {
