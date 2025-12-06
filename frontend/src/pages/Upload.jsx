@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import api from '../utils/api';
+import videoService from '../services/video.service';
 
 function Upload() {
     const [title, setTitle] = useState('');
@@ -13,18 +13,11 @@ function Upload() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setUploading(true);
-        const formData = new FormData();
-        formData.append('title', title);
-        formData.append('description', description);
-        formData.append('videoFile', videoFile);
-        formData.append('thumbnail', thumbnail);
+        setUploading(true);
+        // FormData construction is handled in videoService
 
         try {
-            await api.post('/videos', formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
-            });
+            await videoService.publishVideo({ title, description, videoFile, thumbnail });
             setUploading(false);
             alert('Video uploaded successfully!');
             navigate('/dashboard');

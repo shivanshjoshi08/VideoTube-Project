@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import api from '../utils/api';
+import videoService from '../services/video.service';
 import VideoCard from '../components/VideoCard';
 
 function Home() {
@@ -8,7 +8,7 @@ function Home() {
     useEffect(() => {
         const fetchVideos = async () => {
             try {
-                const response = await api.get('/videos');
+                const response = await videoService.getAllVideos();
                 setVideos(response.data.data.docs || []);
             } catch (error) {
                 console.error('Error fetching videos', error);

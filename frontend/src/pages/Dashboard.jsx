@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import api from '../utils/api';
+import videoService from '../services/video.service';
+import authService from '../services/auth.service';
 import VideoCard from '../components/VideoCard';
 
 function Dashboard() {
@@ -37,7 +38,7 @@ function Dashboard() {
 
     const fetchCurrentUser = async () => {
         try {
-            const response = await api.get('/users/current-user');
+            const response = await authService.getCurrentUser();
             setUser(response.data.data);
             setFullname(response.data.data.fullname);
             setEmail(response.data.data.email);
@@ -49,18 +50,20 @@ function Dashboard() {
     };
 
     const fetchChannelStats = async () => {
-        try {
-            const response = await api.get('/dashboard/stats');
-            setStats(response.data.data);
-        } catch (error) {
-            console.error('Error fetching stats', error);
-        }
+        // Backend dashboard stats are not implemented
+        setStats({
+            totalVideos: 0,
+            totalViews: 0,
+            totalSubscribers: 0,
+            totalLikes: 0
+        });
     };
 
     const fetchChannelVideos = async () => {
+        if (!user?._id) return;
         try {
-            const response = await api.get('/dashboard/videos');
-            setVideos(response.data.data || []);
+            const response = await videoService.getAllVideos({ userId: user._id });
+            setVideos(response.data.data.docs || []);
         } catch (error) {
             console.error('Error fetching videos', error);
         }
@@ -68,7 +71,7 @@ function Dashboard() {
 
     const fetchWatchHistory = async () => {
         try {
-            const response = await api.get('/users/history');
+            const response = await authService.getWatchHistory();
             setWatchHistory(response.data.data || []);
         } catch (error) {
             console.error('Error fetching history', error);
@@ -78,7 +81,7 @@ function Dashboard() {
     const handleUpdateProfile = async (e) => {
         e.preventDefault();
         try {
-            await api.patch('/users/update-account', { fullname, email });
+            await authService.updateAccount({ fullname, email });
             alert('Profile updated successfully');
             fetchCurrentUser();
         } catch (error) {
@@ -90,7 +93,7 @@ function Dashboard() {
     const handleChangePassword = async (e) => {
         e.preventDefault();
         try {
-            await api.post('/users/change-password', { oldPassword, newPassword });
+            await authService.changePassword({ oldPassword, newPassword });
             alert('Password changed successfully');
             setOldPassword('');
             setNewPassword('');
@@ -102,12 +105,9 @@ function Dashboard() {
 
     const handleUpdateAvatar = async (e) => {
         e.preventDefault();
-        const formData = new FormData();
-        formData.append('avatar', avatar);
+        // authService expects raw file, it creates FormData
         try {
-            await api.patch('/users/update-avatar', formData, {
-                headers: { 'Content-Type': 'multipart/form-data' },
-            });
+            await authService.updateAvatar(avatar);
             alert('Avatar updated successfully');
             fetchCurrentUser();
         } catch (error) {
@@ -118,12 +118,8 @@ function Dashboard() {
 
     const handleUpdateCover = async (e) => {
         e.preventDefault();
-        const formData = new FormData();
-        formData.append('coverImage', coverImage);
         try {
-            await api.patch('/users/update-cover-image', formData, {
-                headers: { 'Content-Type': 'multipart/form-data' },
-            });
+            await authService.updateCoverImage(coverImage);
             alert('Cover image updated successfully');
             fetchCurrentUser();
         } catch (error) {
@@ -134,10 +130,13 @@ function Dashboard() {
 
     const handleRefreshToken = async () => {
         try {
-            const response = await api.post('/users/refresh-token');
-            const { accessToken, refreshToken } = response.data.data;
-            localStorage.setItem('accessToken', accessToken);
-            localStorage.setItem('refreshToken', refreshToken);
+            const response = await authService.refreshAccessToken();
+            // Assuming cookies are set by backend 
+            // If we really need to store in localStorage (for access token if returned), we can.
+            if (response.data.data.accessToken) {
+                localStorage.setItem('accessToken', response.data.data.accessToken);
+                localStorage.setItem('refreshToken', response.data.data.refreshToken); // If simplified
+            }
             alert('Token refreshed successfully');
         } catch (error) {
             console.error('Error refreshing token', error);

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import api from '../utils/api';
+import { useAuth } from '../context/AuthContext';
 
 function Register() {
     const [fullName, setFullName] = useState('');
@@ -11,22 +11,25 @@ function Register() {
     const [coverImage, setCoverImage] = useState(null);
     const navigate = useNavigate();
 
+    const { register } = useAuth();
+
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const formData = new FormData();
-        formData.append('fullname', fullName);
-        formData.append('email', email);
-        formData.append('username', username);
-        formData.append('password', password);
-        if (avatar) formData.append('avatar', avatar);
-        if (coverImage) formData.append('coverImage', coverImage);
+        // Prepare data as object first, authService handles FormData conversion if we passed simple object, 
+        // BUT authService.register expects a generic data object and iterates keys to append to FormData. 
+        // So we can pass a plain object with the file objects.
+
+        const data = {
+            fullName,
+            email,
+            username,
+            password,
+            avatar,
+            coverImage
+        };
 
         try {
-            await api.post('/users/register', formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
-            });
+            await register(data);
             navigate('/login');
         } catch (error) {
             console.error('Registration failed', error);

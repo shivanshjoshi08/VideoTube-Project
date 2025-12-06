@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import api from '../utils/api';
+import videoService from '../services/video.service';
 
 function VideoDetail() {
     const { videoId } = useParams();
@@ -12,7 +12,7 @@ function VideoDetail() {
         const fetchVideo = async () => {
             try {
                 setLoading(true);
-                const response = await api.get(`/videos/${videoId}`);
+                const response = await videoService.getVideoById(videoId);
                 setVideo(response.data.data);
                 setError(null);
             } catch (err) {
@@ -34,10 +34,10 @@ function VideoDetail() {
 
     return (
         <div className="video-detail-container">
-            <video 
-                src={video.videoFile} 
-                controls 
-                autoPlay 
+            <video
+                src={video.videoFile}
+                controls
+                autoPlay
                 className="video-player"
                 style={{ width: '100%', borderRadius: '12px' }}
             />
@@ -47,17 +47,26 @@ function VideoDetail() {
                 <div>
                     <p><strong>Views:</strong> {video.views?.toLocaleString() || 0}</p>
                     <p><strong>Uploaded:</strong> {new Date(video.createdAt).toLocaleDateString()}</p>
+                    <div className="video-actions">
+                        {/* Backend Like/Subscribe controllers are not fully implemented yet, showing static buttons */}
+                        <button className="btn-action" disabled>Like</button>
+                        <button className="btn-action" disabled>Subscribe</button>
+                    </div>
                 </div>
                 <div>
                     <p><strong>Uploaded by:</strong> {video.owner?.fullname || video.owner?.username}</p>
                     {video.owner?.avatar && (
-                        <img 
-                            src={video.owner.avatar} 
+                        <img
+                            src={video.owner.avatar}
                             alt={video.owner.username}
                             style={{ width: '40px', height: '40px', borderRadius: '50%', marginTop: '0.5rem' }}
                         />
                     )}
                 </div>
+            </div>
+            <div className="comments-section" style={{ marginTop: '2rem' }}>
+                <h3>Comments</h3>
+                <p>Comments are coming soon!</p>
             </div>
         </div>
     );

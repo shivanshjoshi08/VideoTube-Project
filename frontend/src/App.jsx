@@ -8,6 +8,7 @@ import Upload from './pages/Upload';
 import VideoDetail from './pages/VideoDetail';
 import Dashboard from './pages/Dashboard';
 import Settings from './pages/Settings';
+import ChannelProfile from './pages/ChannelProfile';
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
           <Route path="/settings" element={<Settings />} />
           <Route path="/upload" element={<Upload />} />
           <Route path="/video/:videoId" element={<VideoDetail />} />
+          <Route path="/c/:username" element={<ChannelProfile />} />
         </Routes>
       </div>
     </Router>

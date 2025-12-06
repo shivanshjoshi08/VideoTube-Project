@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import api from '../utils/api';
+import authService from '../services/auth.service';
 import VideoCard from '../components/VideoCard';
 
 function Settings() {
@@ -36,7 +36,7 @@ function Settings() {
 
     const fetchCurrentUser = async () => {
         try {
-            const response = await api.get('/users/current-user');
+            const response = await authService.getCurrentUser();
             setUser(response.data.data);
             setFullname(response.data.data.fullname);
             setEmail(response.data.data.email);
@@ -49,7 +49,7 @@ function Settings() {
 
     const fetchWatchHistory = async () => {
         try {
-            const response = await api.get('/users/history');
+            const response = await authService.getWatchHistory();
             setWatchHistory(response.data.data || []);
         } catch (error) {
             console.error('Error fetching history', error);
@@ -59,7 +59,7 @@ function Settings() {
     const handleUpdateProfile = async (e) => {
         e.preventDefault();
         try {
-            await api.patch('/users/update-account', { fullname, email });
+            await authService.updateAccount({ fullname, email });
             alert('Profile updated successfully');
             fetchCurrentUser();
         } catch (error) {
@@ -75,7 +75,7 @@ function Settings() {
             return;
         }
         try {
-            await api.post('/users/change-password', { oldPassword, newPassword });
+            await authService.changePassword({ oldPassword, newPassword });
             alert('Password changed successfully');
             setOldPassword('');
             setNewPassword('');
@@ -92,12 +92,8 @@ function Settings() {
             alert('Please select an avatar file');
             return;
         }
-        const formData = new FormData();
-        formData.append('avatar', avatar);
         try {
-            await api.patch('/users/update-avatar', formData, {
-                headers: { 'Content-Type': 'multipart/form-data' },
-            });
+            await authService.updateAvatar(avatar);
             alert('Avatar updated successfully');
             setAvatar(null);
             fetchCurrentUser();
@@ -113,12 +109,8 @@ function Settings() {
             alert('Please select a cover image file');
             return;
         }
-        const formData = new FormData();
-        formData.append('coverImage', coverImage);
         try {
-            await api.patch('/users/update-cover-image', formData, {
-                headers: { 'Content-Type': 'multipart/form-data' },
-            });
+            await authService.updateCoverImage(coverImage);
             alert('Cover image updated successfully');
             setCoverImage(null);
             fetchCurrentUser();
@@ -131,10 +123,11 @@ function Settings() {
     const handleRefreshToken = async () => {
         try {
             setTokenRefreshStatus('Refreshing...');
-            const response = await api.post('/users/refresh-token');
-            const { accessToken, refreshToken } = response.data.data;
-            localStorage.setItem('accessToken', accessToken);
-            localStorage.setItem('refreshToken', refreshToken);
+            const response = await authService.refreshAccessToken();
+            if (response.data.data.accessToken) {
+                localStorage.setItem('accessToken', response.data.data.accessToken);
+                localStorage.setItem('refreshToken', response.data.data.refreshToken);
+            }
             setTokenRefreshStatus('Token refreshed successfully at ' + new Date().toLocaleTimeString());
         } catch (error) {
             console.error('Error refreshing token', error);
@@ -144,7 +137,7 @@ function Settings() {
 
     const handleLogout = async () => {
         try {
-            await api.post('/users/logout');
+            await authService.logout();
             localStorage.removeItem('accessToken');
             localStorage.removeItem('refreshToken');
             window.location.href = '/login';
@@ -245,9 +238,9 @@ function Settings() {
                                 <div className="image-preview">
                                     <h3>Profile Avatar</h3>
                                     {user?.avatar && (
-                                        <img 
-                                            src={user.avatar} 
-                                            alt="Current Avatar" 
+                                        <img
+                                            src={user.avatar}
+                                            alt="Current Avatar"
                                             className="avatar-preview"
                                         />
                                     )}
@@ -273,9 +266,9 @@ function Settings() {
                                 <div className="image-preview">
                                     <h3>Cover Image</h3>
                                     {user?.coverImage && (
-                                        <img 
-                                            src={user.coverImage} 
-                                            alt="Current Cover" 
+                                        <img
+                                            src={user.coverImage}
+                                            alt="Current Cover"
                                             className="cover-preview"
                                         />
                                     )}
@@ -345,7 +338,7 @@ function Settings() {
                         <div className="settings-section">
                             <h2>Session Management</h2>
                             <p className="section-description">Manage your login sessions and tokens</p>
-                            
+
                             <div className="session-info">
                                 <div className="session-item">
                                     <h3>Current Session</h3>

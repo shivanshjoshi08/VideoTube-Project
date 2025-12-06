@@ -1,14 +1,13 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import api from '../utils/api';
+import { useAuth } from '../context/AuthContext';
 
 function Navbar() {
-    const navigate = useNavigate();
-    const accessToken = localStorage.getItem('accessToken');
+    const { currentUser, logout } = useAuth();
 
     const handleLogout = async () => {
         try {
-            await api.post('/users/logout');
+            await logout();
             localStorage.removeItem('accessToken');
             localStorage.removeItem('refreshToken');
             navigate('/login');
@@ -23,11 +22,18 @@ function Navbar() {
                 <Link to="/">VideoTube</Link>
             </div>
             <div className="navbar-links">
-                {accessToken ? (
+                {currentUser ? (
                     <>
                         <Link to="/dashboard">Dashboard</Link>
                         <Link to="/settings">Settings</Link>
                         <Link to="/upload">Upload</Link>
+                        {currentUser.avatar && (
+                            <img
+                                src={currentUser.avatar}
+                                alt="avatar"
+                                style={{ width: '30px', height: '30px', borderRadius: '50%', objectFit: 'cover', verticalAlign: 'middle', marginLeft: '10px' }}
+                            />
+                        )}
                         <button onClick={handleLogout}>Logout</button>
                     </>
                 ) : (
