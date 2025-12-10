@@ -9,12 +9,12 @@ class VideoService {
 
     async publishVideo(data) {
         const formData = new FormData();
-        Object.keys(data).forEach(key => {
-            if (data[key]) formData.append(key, data[key]);
-        });
-        return api.post("/videos", formData, {
-            headers: { "Content-Type": "multipart/form-data" },
-        });
+        formData.append("title", data.title);
+        formData.append("description", data.description);
+        formData.append("videoFile", data.videoFile);
+        formData.append("thumbnail", data.thumbnail);
+
+        return api.post("/videos", formData);
     }
 
     async getVideoById(videoId) {
@@ -31,9 +31,7 @@ class VideoService {
         if (data.description) formData.append("description", data.description);
         if (data.thumbnail) formData.append("thumbnail", data.thumbnail);
 
-        return api.patch(`/videos/${videoId}`, formData, {
-            headers: { "Content-Type": "multipart/form-data" },
-        });
+        return api.patch(`/videos/${videoId}`, formData);
     }
 
     async togglePublishStatus(videoId) {

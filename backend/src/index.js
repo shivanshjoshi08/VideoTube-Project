@@ -11,19 +11,8 @@ dotenv.config({
 // const app = express();
 connectDB()
     .then(() => {
-        const port = process.env.PORT || 8000;
-        const server = app.listen(port, () => {
-            console.log(`⚙️ Server is running at port : ${port}`);
-        });
-
-        server.on('error', (err) => {
-            if (err && err.code === 'EADDRINUSE') {
-                console.error(`Port ${port} is already in use. Close the other process or set a different PORT.`);
-                process.exit(1);
-            } else {
-                console.error('Server error', err);
-                process.exit(1);
-            }
+        app.listen(process.env.PORT || 8000, () => {
+            console.log(`⚙️ Server is running at port : ${process.env.PORT}`);
         });
     })
     .catch((error) => {

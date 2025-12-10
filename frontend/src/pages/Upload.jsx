@@ -8,29 +8,42 @@ function Upload() {
     const [videoFile, setVideoFile] = useState(null);
     const [thumbnail, setThumbnail] = useState(null);
     const [uploading, setUploading] = useState(false);
+    const [uploadSuccess, setUploadSuccess] = useState(false);
     const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setUploadSuccess(false); // Reset status
+
+        if (!videoFile || !thumbnail) {
+            alert('Please select both video file and thumbnail');
+            return;
+        }
+
         setUploading(true);
-        setUploading(true);
-        // FormData construction is handled in videoService
 
         try {
             await videoService.publishVideo({ title, description, videoFile, thumbnail });
             setUploading(false);
-            alert('Video uploaded successfully!');
-            navigate('/dashboard');
+            setUploadSuccess(true);
+            alert("Video uploaded successfully!");
+            setTitle('');
+            setDescription('');
+            setVideoFile(null);
+            setThumbnail(null);
+            // navigate('/dashboard'); // Optional: stay on page to show success
+            setTimeout(() => navigate('/dashboard'), 2000);
         } catch (error) {
             console.error('Upload failed', error);
             setUploading(false);
-            alert('Upload failed');
+            alert('Upload failed: ' + (error.response?.data?.message || error.message));
         }
     };
 
     return (
         <div className="upload-container">
             <h2>Upload Video</h2>
+            {uploadSuccess && <div style={{ backgroundColor: '#d4edda', color: '#155724', padding: '10px', marginBottom: '10px', borderRadius: '5px' }}>Video uploaded successfully! Redirecting...</div>}
             <form onSubmit={handleSubmit}>
                 <input
                     type="text"

@@ -3,7 +3,7 @@ import mongooseAggregatePaginate from "mongoose-aggregate-paginate-v2";
 
 const commentSchema = new Schema(
     {
-        constent: {
+        content: {
             type: String,
             required: true,
         },
@@ -15,9 +15,10 @@ const commentSchema = new Schema(
             type: Schema.Types.ObjectId,
             ref: "User"
         }
-    }, {
-    timestamps: true
-}
+    },
+    {
+        timestamps: true
+    }
 )
 
 commentSchema.plugin(mongooseAggregatePaginate)
