@@ -209,6 +209,7 @@ function Settings() {
                                         onChange={(e) => setFullname(e.target.value)}
                                         placeholder="Enter your full name"
                                         required
+                                        className="form-input"
                                     />
                                 </div>
                                 <div className="form-group">
@@ -220,6 +221,7 @@ function Settings() {
                                         onChange={(e) => setEmail(e.target.value)}
                                         placeholder="Enter your email"
                                         required
+                                        className="form-input"
                                     />
                                 </div>
                                 <button type="submit" className="btn-primary">Save Changes</button>
@@ -304,6 +306,7 @@ function Settings() {
                                         onChange={(e) => setOldPassword(e.target.value)}
                                         placeholder="Enter your current password"
                                         required
+                                        className="form-input"
                                     />
                                 </div>
                                 <div className="form-group">
@@ -315,6 +318,7 @@ function Settings() {
                                         onChange={(e) => setNewPassword(e.target.value)}
                                         placeholder="Enter your new password"
                                         required
+                                        className="form-input"
                                     />
                                 </div>
                                 <div className="form-group">
@@ -326,6 +330,7 @@ function Settings() {
                                         onChange={(e) => setConfirmPassword(e.target.value)}
                                         placeholder="Confirm your new password"
                                         required
+                                        className="form-input"
                                     />
                                 </div>
                                 <button type="submit" className="btn-primary">Change Password</button>

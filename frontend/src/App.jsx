@@ -12,6 +12,8 @@ import Settings from './pages/Settings';
 import ChannelProfile from './pages/ChannelProfile';
 import SearchResults from './pages/SearchResults';
 import History from './pages/History';
+import Playlists from './pages/Playlists';
+import PlaylistDetail from './pages/PlaylistDetail';
 
 function App() {
   return (
@@ -32,6 +34,8 @@ function App() {
               <Route path="/c/:username" element={<ChannelProfile />} />
               <Route path="/search" element={<SearchResults />} />
               <Route path="/history" element={<History />} />
+              <Route path="/playlists" element={<Playlists />} />
+              <Route path="/playlist/:playlistId" element={<PlaylistDetail />} />
             </Routes>
           </main>
         </div>

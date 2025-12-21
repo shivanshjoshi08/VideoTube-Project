@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import videoService from '../services/video.service';
 import authService from '../services/auth.service';
-import dashboardService from '../services/dashboard.service';
 import tweetService from '../services/tweet.service';
+import subscriptionService from '../services/subscription.service';
 import DashboardVideoCard from '../components/DashboardVideoCard';
 
 function Dashboard() {
@@ -28,21 +28,28 @@ function Dashboard() {
     const [editingTweet, setEditingTweet] = useState(null); // { id, content }
 
     useEffect(() => {
+        if (user?._id) {
+            fetchChannelStats();
+            if (activeTab === 'videos') {
+                fetchChannelVideos();
+            }
+        }
+    }, [user, activeTab]);
+
+    useEffect(() => {
         fetchCurrentUser();
-        fetchChannelStats();
     }, []);
 
     useEffect(() => {
-        if (activeTab === 'videos') {
-            fetchChannelVideos();
-        }
+        if (!user?._id) return;
+
         if (activeTab === 'tweets') {
             fetchUserTweets();
         }
         if (activeTab === 'history') {
             fetchWatchHistory();
         }
-    }, [activeTab]);
+    }, [activeTab, user]);
 
     const fetchCurrentUser = async () => {
         try {
@@ -58,25 +65,45 @@ function Dashboard() {
     };
 
     const fetchChannelStats = async () => {
+        // Polyfill: Calculate stats from videos and subscriptions since backend controller is empty
         try {
-            const response = await dashboardService.getChannelStats();
-            setStats(response.data.data);
+            // We need videos to calculate views and video count
+            // We need subscriber count from subscription service
+            // We cannot get total likes easily without backend aggregation, so we'll set it to 0 or hidden
+
+            // 1. Get Videos (already managed by fetchChannelVideos, but we need them here for stats if they aren't loaded yet)
+            // But fetchChannelVideos depends on user state. 
+            // Let's rely on fetchChannelVideos to populate 'videos' state, and then we derive stats from it?
+            // Actually, better to fetch everything here independently or ensure order.
+
+            if (!user?._id) return;
+
+            const videosResponse = await videoService.getAllVideos({ userId: user._id });
+            const userVideos = videosResponse.data.data.docs || [];
+
+            const totalVideos = userVideos.length;
+            const totalViews = userVideos.reduce((acc, curr) => acc + (curr.views || 0), 0);
+
+            // 2. Get Subscribers
+            const subsResponse = await subscriptionService.getUserChannelSubscribers(user._id);
+            const totalSubscribers = subsResponse.data.data.length || 0;
+
+            setStats({
+                totalVideos,
+                totalViews,
+                totalSubscribers,
+                totalLikes: 0 // Cannot calculate without backend
+            });
         } catch (error) {
             console.error('Error fetching stats', error);
-            setStats({
-                totalVideos: 0,
-                totalViews: 0,
-                totalSubscribers: 0,
-                totalLikes: 0
-            });
         }
     };
 
     const fetchChannelVideos = async () => {
         if (!user?._id) return;
         try {
-            const response = await dashboardService.getChannelVideos();
-            setVideos(response.data.data || []);
+            const response = await videoService.getAllVideos({ userId: user._id });
+            setVideos(response.data.data.docs || []);
         } catch (error) {
             console.error('Error fetching videos', error);
         }
@@ -268,8 +295,8 @@ function Dashboard() {
                         <div className="video-grid">
                             {videos.length > 0 ? (
                                 videos.map((video) => (
-                                    <DashboardVideoCard 
-                                        key={video._id} 
+                                    <DashboardVideoCard
+                                        key={video._id}
                                         video={video}
                                         onDelete={(videoId) => setVideos(videos.filter(v => v._id !== videoId))}
                                         onUpdate={(updatedVideo) => {
@@ -298,7 +325,8 @@ function Dashboard() {
                                 onChange={(e) => setNewTweetContent(e.target.value)}
                                 placeholder="What's on your mind?"
                                 rows="3"
-                                style={{ width: '100%', padding: '10px', marginBottom: '10px', backgroundColor: '#222', color: '#fff', border: '1px solid #444', borderRadius: '4px' }}
+                                className="form-input"
+                                style={{ marginBottom: '10px', resize: 'vertical' }}
                             />
                             <button type="submit" className="btn-primary">Post Tweet</button>
                         </form>
@@ -312,7 +340,8 @@ function Dashboard() {
                                                 <textarea
                                                     value={editingTweet.content}
                                                     onChange={(e) => setEditingTweet({ ...editingTweet, content: e.target.value })}
-                                                    style={{ width: '100%', padding: '8px', backgroundColor: '#333', color: '#fff', border: '1px solid #555' }}
+                                                    className="form-input"
+                                                    style={{ padding: '8px' }}
                                                 />
                                                 <div style={{ marginTop: '10px' }}>
                                                     <button onClick={handleUpdateTweet} className="btn-primary" style={{ marginRight: '10px', fontSize: '0.8rem' }}>Save</button>
@@ -373,14 +402,16 @@ function Dashboard() {
                                         type="text"
                                         value={fullname}
                                         onChange={(e) => setFullname(e.target.value)}
+                                        className="form-input"
                                     />
                                     <label>Email</label>
                                     <input
                                         type="email"
                                         value={email}
                                         onChange={(e) => setEmail(e.target.value)}
+                                        className="form-input"
                                     />
-                                    <button type="submit">Save Changes</button>
+                                    <button type="submit" className="btn-primary">Save Changes</button>
                                 </form>
                             )}
 
@@ -393,7 +424,7 @@ function Dashboard() {
                                             type="file"
                                             onChange={(e) => setAvatar(e.target.files[0])}
                                         />
-                                        <button type="submit">Update Avatar</button>
+                                        <button type="submit" className="btn-primary">Update Avatar</button>
                                     </form>
                                     <hr style={{ margin: '2rem 0', borderColor: 'var(--border-color)' }} />
                                     <form onSubmit={handleUpdateCover}>
@@ -403,7 +434,7 @@ function Dashboard() {
                                             type="file"
                                             onChange={(e) => setCoverImage(e.target.files[0])}
                                         />
-                                        <button type="submit">Update Cover Image</button>
+                                        <button type="submit" className="btn-primary">Update Cover Image</button>
                                     </form>
                                 </div>
                             )}
@@ -416,14 +447,16 @@ function Dashboard() {
                                         type="password"
                                         value={oldPassword}
                                         onChange={(e) => setOldPassword(e.target.value)}
+                                        className="form-input"
                                     />
                                     <label>New Password</label>
                                     <input
                                         type="password"
                                         value={newPassword}
                                         onChange={(e) => setNewPassword(e.target.value)}
+                                        className="form-input"
                                     />
-                                    <button type="submit">Change Password</button>
+                                    <button type="submit" className="btn-primary">Change Password</button>
                                 </form>
                             )}
 
@@ -431,7 +464,7 @@ function Dashboard() {
                                 <div>
                                     <h3>Session Management</h3>
                                     <p>Manually refresh your access token if needed.</p>
-                                    <button onClick={handleRefreshToken}>Refresh Token</button>
+                                    <button onClick={handleRefreshToken} className="btn-secondary">Refresh Token</button>
                                 </div>
                             )}
                         </div>

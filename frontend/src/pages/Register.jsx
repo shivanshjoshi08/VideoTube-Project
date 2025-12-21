@@ -47,6 +47,7 @@ function Register() {
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
                     required
+                    className="form-input"
                 />
                 <input
                     type="email"
@@ -54,6 +55,7 @@ function Register() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
+                    className="form-input"
                 />
                 <input
                     type="text"
@@ -61,6 +63,7 @@ function Register() {
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
                     required
+                    className="form-input"
                 />
                 <input
                     type="password"
@@ -68,19 +71,22 @@ function Register() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
+                    className="form-input"
                 />
-                <label>Avatar:</label>
+                <label style={{ display: 'block', margin: '10px 0 5px' }}>Avatar:</label>
                 <input
                     type="file"
                     onChange={(e) => setAvatar(e.target.files[0])}
                     required
+                    style={{ marginBottom: '15px' }}
                 />
-                <label>Cover Image:</label>
+                <label style={{ display: 'block', margin: '10px 0 5px' }}>Cover Image:</label>
                 <input
                     type="file"
                     onChange={(e) => setCoverImage(e.target.files[0])}
+                    style={{ marginBottom: '20px' }}
                 />
-                <button type="submit">Register</button>
+                <button type="submit" className="btn-primary">Register</button>
             </form>
         </div>
     );

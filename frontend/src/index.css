@@ -299,48 +299,62 @@ a {
 /* Auth Pages */
 .auth-container {
   max-width: 450px;
-  margin: 40px auto;
-  background-color: var(--yt-bg-light);
-  /* Slightly lighter for card effect */
-  padding: 48px;
-  border-radius: 8px;
+  margin: 60px auto;
+  background-color: var(--yt-surface);
+  padding: 40px;
+  border-radius: 12px;
   border: 1px solid var(--yt-border);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
 }
 
 .auth-title {
   text-align: center;
   margin-bottom: 30px;
-  font-size: 1.5rem;
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: var(--yt-text);
 }
 
 .form-group {
-  margin-bottom: 20px;
+  margin-bottom: 24px;
 }
 
 .form-input {
   width: 100%;
-  padding: 12px;
-  background-color: var(--yt-bg);
+  padding: 14px 16px;
+  background-color: var(--yt-input-bg);
   border: 1px solid var(--yt-border);
-  border-radius: 4px;
+  border-radius: 8px;
   color: var(--yt-text);
+  font-size: 1rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  margin-bottom: 16px;
 }
 
 .form-input:focus {
   border-color: #3ea6ff;
   outline: none;
+  box-shadow: 0 0 0 2px rgba(62, 166, 255, 0.2);
+}
+
+.form-input::placeholder {
+  color: #717171;
 }
 
 .btn-primary {
+  width: 100%;
   background-color: #3ea6ff;
   color: #0f0f0f;
   font-weight: 600;
-  padding: 10px 24px;
+  padding: 12px 24px;
   border: none;
-  border-radius: 18px;
+  border-radius: 20px;
   cursor: pointer;
   text-transform: uppercase;
-  font-size: 0.9rem;
+  font-size: 0.95rem;
+  letter-spacing: 0.5px;
+  transition: background-color 0.2s;
+  margin-top: 10px;
 }
 
 .btn-primary:hover {
@@ -403,4 +417,54 @@ td {
   padding: 12px;
   border-bottom: 1px solid var(--yt-border);
   color: var(--yt-text);
+}
+
+/* Modals */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: var(--yt-bg-light);
+  padding: 24px;
+  border-radius: 8px;
+  width: 100%;
+  max-width: 500px;
+  border: 1px solid var(--yt-border);
+}
+
+.modal-content h2,
+.modal-content h3 {
+  margin-top: 0;
+  margin-bottom: 20px;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.btn-secondary {
+  background-color: transparent;
+  color: var(--yt-text);
+  border: 1px solid var(--yt-border);
+  padding: 10px 16px;
+  border-radius: 18px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.btn-secondary:hover {
+  background-color: var(--yt-hover);
 }

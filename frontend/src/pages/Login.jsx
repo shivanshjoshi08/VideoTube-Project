@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 function Login() {
-    const [email, setEmail] = useState('');
+    const [identifier, setIdentifier] = useState(''); // Stores email or username
     const [password, setPassword] = useState('');
     const navigate = useNavigate();
     const { login } = useAuth();
@@ -11,12 +11,14 @@ function Login() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await login({ email, password });
-            // If backend uses cookies, we don't need to manually save tokens. 
-            // If it returns them and expects them in headers, we might need to.
-            // For now, let's assume if it returns them, we might as well save them just in case existing logic needed it, 
-            // but relying on cookies is better with withCredentials=true.
-            // If the previous code saved them, let's just keep saving them to be safe, but ideally we move this to api interceptors later if needed.
+            // Backend checks $or: [{ username }, { email }]
+            // Sending the same value for both allows login by either.
+            const response = await login({
+                email: identifier,
+                username: identifier,
+                password
+            });
+
             if (response.data.data.accessToken) {
                 localStorage.setItem('accessToken', response.data.data.accessToken);
                 localStorage.setItem('refreshToken', response.data.data.refreshToken);
@@ -33,11 +35,12 @@ function Login() {
             <h2>Login</h2>
             <form onSubmit={handleSubmit}>
                 <input
-                    type="email"
-                    placeholder="Email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    type="text"
+                    placeholder="Username or Email"
+                    value={identifier}
+                    onChange={(e) => setIdentifier(e.target.value)}
                     required
+                    className="form-input"
                 />
                 <input
                     type="password"
@@ -45,8 +48,9 @@ function Login() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
+                    className="form-input"
                 />
-                <button type="submit">Login</button>
+                <button type="submit" className="btn-primary">Login</button>
             </form>
         </div>
     );

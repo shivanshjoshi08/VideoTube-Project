@@ -55,17 +55,13 @@ function CommentSection({ videoId }) {
                         onChange={(e) => setNewComment(e.target.value)}
                         placeholder="Add a comment..."
                         rows="2"
+                        className="form-input"
                         style={{
                             flex: 1,
-                            padding: '0.8rem',
-                            backgroundColor: 'var(--yt-hover)',
-                            border: '1px solid var(--yt-border)',
-                            borderRadius: '6px',
-                            color: 'var(--yt-text-primary)',
-                            fontFamily: 'inherit',
-                            fontSize: '0.9rem',
+                            marginTop: 0, // form-input has margin-bottom, but here we might not want it or it's fine.
+                            marginBottom: 0,
                             resize: 'vertical',
-                            outline: 'none'
+                            minHeight: '40px'
                         }}
                     />
                     <button

@@ -51,12 +51,14 @@ function Upload() {
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
                     required
+                    className="form-input"
                 />
                 <textarea
                     placeholder="Description"
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                     required
+                    className="form-input"
                 />
                 <label>Video File:</label>
                 <input

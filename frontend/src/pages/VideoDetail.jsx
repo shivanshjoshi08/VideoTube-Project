@@ -3,6 +3,8 @@ import { useParams } from 'react-router-dom';
 import videoService from '../services/video.service';
 import likeService from '../services/like.service';
 import subscriptionService from '../services/subscription.service';
+import playlistService from '../services/playlist.service';
+import { useAuth } from '../context/AuthContext';
 
 function VideoDetail() {
     const { videoId } = useParams();
@@ -15,6 +17,11 @@ function VideoDetail() {
     const [likeCount, setLikeCount] = useState(0);
     const [subscriberCount, setSubscriberCount] = useState(0);
     const [actionLoading, setActionLoading] = useState(false);
+
+    // Playlist Modal State
+    const [showPlaylistModal, setShowPlaylistModal] = useState(false);
+    const [userPlaylists, setUserPlaylists] = useState([]);
+    const { currentUser } = useAuth();
 
     useEffect(() => {
         const fetchVideoAndRelated = async () => {
@@ -56,31 +63,34 @@ function VideoDetail() {
     }, [videoId]);
 
     const handleLike = async () => {
-        try {
-            setActionLoading(true);
-            await likeService.toggleVideoLike(videoId);
-            setIsLiked(!isLiked);
-            setLikeCount(isLiked ? likeCount - 1 : likeCount + 1);
-        } catch (error) {
-            console.error('Error toggling like:', error);
-            alert('Failed to like video');
-        } finally {
-            setActionLoading(false);
-        }
+        // Feature not implemented on backend
+        alert("Like feature coming soon!");
+        // try {
+        //     setActionLoading(true);
+        //     await likeService.toggleVideoLike(videoId);
+        //     setIsLiked(!isLiked);
+        //     setLikeCount(isLiked ? likeCount - 1 : likeCount + 1);
+        // } catch (error) {
+        //     console.error('Error toggling like:', error);
+        //     alert('Failed to like video');
+        // } finally {
+        //     setActionLoading(false);
+        // }
     };
 
     const handleSubscribe = async () => {
-        try {
-            setActionLoading(true);
-            await subscriptionService.toggleSubscription(video.owner._id);
-            setIsSubscribed(!isSubscribed);
-            setSubscriberCount(isSubscribed ? subscriberCount - 1 : subscriberCount + 1);
-        } catch (error) {
-            console.error('Error toggling subscription:', error);
-            alert('Failed to toggle subscription');
-        } finally {
-            setActionLoading(false);
-        }
+        alert("Subscribe feature unavailable (Backend route mismatch)");
+        // try {
+        //     setActionLoading(true);
+        //     await subscriptionService.toggleSubscription(video.owner._id);
+        //     setIsSubscribed(!isSubscribed);
+        //     setSubscriberCount(isSubscribed ? subscriberCount - 1 : subscriberCount + 1);
+        // } catch (error) {
+        //     console.error('Error toggling subscription:', error);
+        //     alert('Failed to toggle subscription');
+        // } finally {
+        //     setActionLoading(false);
+        // }
     };
 
     if (loading) {
@@ -123,24 +133,24 @@ function VideoDetail() {
                             </div>
                         </div>
                         <div className="video-actions">
-                            <button 
-                                onClick={handleLike} 
-                                title="Like"
-                                disabled={actionLoading}
-                                style={{ 
-                                    backgroundColor: isLiked ? 'rgba(255, 0, 0, 0.2)' : 'var(--yt-hover)',
-                                    color: isLiked ? 'var(--yt-brand-color)' : 'var(--yt-text-primary)'
+                            <button
+                                onClick={handleLike}
+                                title="Like (Coming Soon)"
+                                style={{
+                                    backgroundColor: 'rgba(0,0,0,0.1)',
+                                    color: 'var(--yt-text-secondary)',
+                                    cursor: 'not-allowed'
                                 }}
                             >
                                 👍 {likeCount}
                             </button>
-                            <button title="Dislike">
+                            <button title="Dislike" disabled style={{ cursor: 'not-allowed', color: 'var(--yt-text-secondary)' }}>
                                 👎 Dislike
                             </button>
                             <button title="Share">
                                 ↗️ Share
                             </button>
-                            <button title="Save">
+                            <button title="Save" onClick={handleSaveClick}>
                                 🔖 Save
                             </button>
                         </div>
@@ -158,17 +168,19 @@ function VideoDetail() {
                                 <p>@{video.owner?.username} • {subscriberCount.toLocaleString()} subscribers</p>
                             </div>
                         </div>
-                        <button 
-                            className="btn-primary" 
+                        <button
+                            className="btn-primary"
                             onClick={handleSubscribe}
                             disabled={actionLoading}
                             style={{
                                 backgroundColor: isSubscribed ? 'var(--yt-hover)' : 'var(--yt-brand-color)',
                                 color: isSubscribed ? 'var(--yt-text-primary)' : '#fff',
-                                border: isSubscribed ? '1px solid var(--yt-border)' : 'none'
+                                border: isSubscribed ? '1px solid var(--yt-border)' : 'none',
+                                opacity: 0.5,
+                                cursor: 'not-allowed'
                             }}
                         >
-                            {isSubscribed ? '✓ Subscribed' : 'Subscribe'}
+                            {isSubscribed ? '✓ Subscribed' : 'Subscribe (Broken)'}
                         </button>
                     </div>
 
@@ -213,6 +225,30 @@ function VideoDetail() {
                     )}
                 </div>
             </div>
+            {/* Simple Playlist Selection Modal */}
+            {showPlaylistModal && (
+                <div className="modal-overlay" onClick={() => setShowPlaylistModal(false)}>
+                    <div className="modal-content" onClick={e => e.stopPropagation()}>
+                        <h3>Save to...</h3>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', maxHeight: '300px', overflowY: 'auto' }}>
+                            {userPlaylists.length === 0 ? (
+                                <p>No playlists found.</p>
+                            ) : (
+                                userPlaylists.map(playlist => (
+                                    <button
+                                        key={playlist._id}
+                                        onClick={() => handleAddToPlaylist(playlist._id)}
+                                        style={{ padding: '10px', textAlign: 'left', backgroundColor: '#333', border: 'none', color: 'white', cursor: 'pointer', borderRadius: '4px' }}
+                                    >
+                                        {playlist.name}
+                                    </button>
+                                ))
+                            )}
+                        </div>
+                        <button onClick={() => setShowPlaylistModal(false)} style={{ marginTop: '10px', width: '100%', padding: '8px' }}>Close</button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

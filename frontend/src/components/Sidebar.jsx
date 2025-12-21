@@ -29,10 +29,10 @@ function Sidebar() {
                 <span className="sidebar-icon">📤</span>
                 <span className="sidebar-label">Upload</span>
             </Link>
-            <div className="sidebar-link" title="Coming Soon">
+            <Link to="/playlists" className="sidebar-link" style={isActive('/playlists') ? activeStyle : {}}>
                 <span className="sidebar-icon">📁</span>
-                <span className="sidebar-label">Library</span>
-            </div>
+                <span className="sidebar-label">Playlists</span>
+            </Link>
             <Link to="/history" className="sidebar-link" style={isActive('/history') ? activeStyle : {}}>
                 <span className="sidebar-icon">🕒</span>
                 <span className="sidebar-label">History</span>
