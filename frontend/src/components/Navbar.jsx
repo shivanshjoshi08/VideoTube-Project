@@ -28,46 +28,36 @@ function Navbar() {
     return (
         <nav className="navbar">
             <div className="navbar-start">
-                <button className="nav-icon-btn">☰</button>
                 <Link to="/" className="navbar-brand">
-                    <span className="navbar-logo-icon">▶</span>
-                    <span>VideoTube</span>
+                    VideoTube
                 </Link>
+                <div style={{ marginLeft: '20px' }}>
+                    <Link to="/" style={{ marginRight: '15px', fontWeight: 'bold' }}>Home</Link>
+                    <Link to="/upload" style={{ marginRight: '15px' }}>Upload</Link>
+                    <Link to="/dashboard" style={{ marginRight: '15px' }}>Dashboard</Link>
+                </div>
             </div>
 
             <div className="navbar-center">
                 <form className="search-box" onSubmit={handleSearch}>
                     <input
                         type="text"
-                        placeholder="Search"
-                        className="search-input"
+                        placeholder="Search..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                     />
-                    <button type="submit" className="search-btn">🔍</button>
+                    <button type="submit">Search</button>
                 </form>
             </div>
 
             <div className="navbar-end">
                 {currentUser ? (
-                    <>
-                        <Link to="/upload" className="nav-icon-btn" title="Create">📹</Link>
-                        <button className="nav-icon-btn" title="Notifications">🔔</button>
-                        <div className="user-avatar-btn" onClick={handleLogout} title="Logout">
-                            {currentUser.avatar ? (
-                                <img src={currentUser.avatar} alt="avatar" />
-                            ) : (
-                                <div style={{ width: '100%', height: '100%', background: '#555' }}></div>
-                            )}
-                        </div>
-                    </>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <span>{currentUser.username}</span>
+                        <button onClick={handleLogout}>Logout</button>
+                    </div>
                 ) : (
-                    <>
-                        <button className="nav-icon-btn">⋮</button>
-                        <Link to="/login" className="btn-primary" style={{ borderRadius: '20px', padding: '6px 16px', border: '1px solid #3ea6ff', background: 'none', color: '#3ea6ff', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                            👤 <span style={{ fontSize: '0.9rem' }}>Sign in</span>
-                        </Link>
-                    </>
+                    <Link to="/login">Login</Link>
                 )}
             </div>
         </nav>

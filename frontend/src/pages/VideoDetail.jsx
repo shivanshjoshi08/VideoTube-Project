@@ -114,7 +114,6 @@ function VideoDetail() {
     return (
         <div className="app-content">
             <div className="video-detail-container">
-                {/* Main Video Section */}
                 <div className="video-player-section">
                     <video
                         src={video.videoFile}
@@ -123,106 +122,65 @@ function VideoDetail() {
                         className="video-player"
                     ></video>
 
-                    {/* Video Metadata */}
                     <div className="video-meta">
-                        <div className="video-meta-left">
-                            <h1>{video.title}</h1>
-                            <div className="video-meta-stats">
-                                <span>{video.views} views</span>
-                                <span>{new Date(video.createdAt).toLocaleDateString()}</span>
-                            </div>
-                        </div>
+                        <h1>{video.title}</h1>
+                        <p>{video.views} views • {new Date(video.createdAt).toLocaleDateString()}</p>
+
                         <div className="video-actions">
-                            <button
-                                onClick={handleLike}
-                                title="Like (Coming Soon)"
-                                style={{
-                                    backgroundColor: 'rgba(0,0,0,0.1)',
-                                    color: 'var(--yt-text-secondary)',
-                                    cursor: 'not-allowed'
-                                }}
-                            >
-                                👍 {likeCount}
-                            </button>
-                            <button title="Dislike" disabled style={{ cursor: 'not-allowed', color: 'var(--yt-text-secondary)' }}>
-                                👎 Dislike
-                            </button>
-                            <button title="Share">
-                                ↗️ Share
-                            </button>
-                            <button title="Save" onClick={handleSaveClick}>
-                                🔖 Save
-                            </button>
+                            <button onClick={handleLike} disabled>Like ({likeCount})</button>
+                            <button disabled>Dislike</button>
+                            <button>Share</button>
+                            <button onClick={() => setShowPlaylistModal(true)}>Save</button>
                         </div>
                     </div>
 
-                    {/* Channel Section */}
-                    <div className="video-channel-section">
-                        <div className="channel-info">
-                            <img
-                                src={video.owner?.avatar || 'https://via.placeholder.com/50'}
-                                alt={video.owner?.username}
-                            />
-                            <div className="channel-details">
-                                <h4>{video.owner?.fullName}</h4>
-                                <p>@{video.owner?.username} • {subscriberCount.toLocaleString()} subscribers</p>
-                            </div>
+                    <div className="channel-info">
+                        <img
+                            src={video.owner?.avatar || 'https://via.placeholder.com/50'}
+                            alt={video.owner?.username}
+                            className="channel-avatar"
+                        />
+                        <div>
+                            <h4>{video.owner?.fullName}</h4>
+                            <p>@{video.owner?.username} • {subscriberCount.toLocaleString()} subscribers</p>
                         </div>
-                        <button
-                            className="btn-primary"
-                            onClick={handleSubscribe}
-                            disabled={actionLoading}
-                            style={{
-                                backgroundColor: isSubscribed ? 'var(--yt-hover)' : 'var(--yt-brand-color)',
-                                color: isSubscribed ? 'var(--yt-text-primary)' : '#fff',
-                                border: isSubscribed ? '1px solid var(--yt-border)' : 'none',
-                                opacity: 0.5,
-                                cursor: 'not-allowed'
-                            }}
-                        >
-                            {isSubscribed ? '✓ Subscribed' : 'Subscribe (Broken)'}
-                        </button>
+                        <button onClick={handleSubscribe} disabled>Subscribe</button>
                     </div>
 
-                    {/* Description */}
                     <div className="video-description">
-                        {video.description}
-                    </div>
-
-                    {/* Comments Section */}
-                    <div style={{ marginTop: '2rem', paddingTop: '2rem', borderTop: '1px solid var(--yt-border)' }}>
-                        <h3 style={{ marginBottom: '1rem' }}>Comments</h3>
-                        <p style={{ color: 'var(--yt-text-secondary)' }}>Comments feature coming soon! (Backend not implemented)</p>
+                        <p>{video.description}</p>
                     </div>
                 </div>
 
-                {/* Sidebar - Related Videos */}
-                <div className="related-videos-section">
-                    <h3>Recommended</h3>
-                    {relatedVideos.length === 0 ? (
-                        <p style={{ color: 'var(--yt-text-secondary)', fontSize: '0.9rem' }}>No related videos</p>
-                    ) : (
-                        relatedVideos.map((relatedVideo) => (
-                            <a
-                                key={relatedVideo._id}
-                                href={`/video/${relatedVideo._id}`}
-                                style={{ textDecoration: 'none', color: 'inherit' }}
-                            >
-                                <div className="related-video-item">
-                                    <img
-                                        src={relatedVideo.thumbnail || 'https://via.placeholder.com/100x56'}
-                                        alt={relatedVideo.title}
-                                        className="related-video-thumbnail"
-                                    />
-                                    <div className="related-video-info">
-                                        <h4>{relatedVideo.title}</h4>
-                                        <p>{relatedVideo.owner?.username}</p>
-                                        <p>{relatedVideo.views} views</p>
+                <div className="related-videos-section" style={{ marginTop: '20px' }}>
+                    <h3>Recommended Videos</h3>
+                    <div className="video-grid">
+                        {relatedVideos.length === 0 ? (
+                            <p>No related videos found.</p>
+                        ) : (
+                            relatedVideos.map((relatedVideo) => (
+                                <a
+                                    key={relatedVideo._id}
+                                    href={`/video/${relatedVideo._id}`}
+                                    style={{ textDecoration: 'none', color: 'inherit' }}
+                                >
+                                    <div className="video-card">
+                                        <div className="video-thumbnail-container">
+                                            <img
+                                                src={relatedVideo.thumbnail || 'https://via.placeholder.com/100x56'}
+                                                alt={relatedVideo.title}
+                                                className="video-thumbnail"
+                                            />
+                                        </div>
+                                        <div>
+                                            <h4>{relatedVideo.title}</h4>
+                                            <p>By {relatedVideo.owner?.username}</p>
+                                        </div>
                                     </div>
-                                </div>
-                            </a>
-                        ))
-                    )}
+                                </a>
+                            ))
+                        )}
+                    </div>
                 </div>
             </div>
             {/* Simple Playlist Selection Modal */}

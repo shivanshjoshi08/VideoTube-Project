@@ -1,7 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
-import Sidebar from './components/Sidebar';
+// import Sidebar from './components/Sidebar';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -20,25 +20,22 @@ function App() {
     <Router>
       <div className="app-container">
         <Navbar />
-        <div className="main-layout">
-          <Sidebar />
-          <main className="main-content">
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/settings" element={<Settings />} />
-              <Route path="/upload" element={<Upload />} />
-              <Route path="/video/:videoId" element={<VideoDetail />} />
-              <Route path="/c/:username" element={<ChannelProfile />} />
-              <Route path="/search" element={<SearchResults />} />
-              <Route path="/history" element={<History />} />
-              <Route path="/playlists" element={<Playlists />} />
-              <Route path="/playlist/:playlistId" element={<PlaylistDetail />} />
-            </Routes>
-          </main>
-        </div>
+        <main className="main-content">
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/settings" element={<Settings />} />
+            <Route path="/upload" element={<Upload />} />
+            <Route path="/video/:videoId" element={<VideoDetail />} />
+            <Route path="/c/:username" element={<ChannelProfile />} />
+            <Route path="/search" element={<SearchResults />} />
+            <Route path="/history" element={<History />} />
+            <Route path="/playlists" element={<Playlists />} />
+            <Route path="/playlist/:playlistId" element={<PlaylistDetail />} />
+          </Routes>
+        </main>
       </div>
     </Router>
   );
