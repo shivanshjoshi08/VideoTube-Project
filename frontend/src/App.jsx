@@ -15,10 +15,13 @@ import History from './pages/History';
 import Playlists from './pages/Playlists';
 import PlaylistDetail from './pages/PlaylistDetail';
 
+import { Toaster } from 'react-hot-toast';
+
 function App() {
   return (
     <Router>
       <div className="app-container">
+        <Toaster position="top-right" />
         <Navbar />
         <main className="main-content">
           <Routes>

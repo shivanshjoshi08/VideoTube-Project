@@ -1,20 +1,25 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import toast from 'react-hot-toast';
 
 function Navbar() {
     const { currentUser, logout } = useAuth();
     const navigate = useNavigate();
     const [searchQuery, setSearchQuery] = useState('');
 
+    // ... inside Navbar component
+
     const handleLogout = async () => {
         try {
             await logout();
+            toast.success('Logged out successfully');
+        } catch (error) {
+            console.error('Logout failed', error);
+        } finally {
             localStorage.removeItem('accessToken');
             localStorage.removeItem('refreshToken');
             navigate('/login');
-        } catch (error) {
-            console.error('Logout failed', error);
         }
     };
 
@@ -57,7 +62,10 @@ function Navbar() {
                         <button onClick={handleLogout}>Logout</button>
                     </div>
                 ) : (
-                    <Link to="/login">Login</Link>
+                    <div style={{ display: 'flex', gap: '15px' }}>
+                        <Link to="/login">Login</Link>
+                        <Link to="/register" className="btn-primary" style={{ textDecoration: 'none', padding: '5px 15px' }}>Register</Link>
+                    </div>
                 )}
             </div>
         </nav>

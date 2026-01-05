@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
+import toast from 'react-hot-toast';
+
 function Register() {
     const [fullName, setFullName] = useState('');
     const [email, setEmail] = useState('');
@@ -9,6 +11,7 @@ function Register() {
     const [password, setPassword] = useState('');
     const [avatar, setAvatar] = useState(null);
     const [coverImage, setCoverImage] = useState(null);
+    const [error, setError] = useState('');
     const navigate = useNavigate();
 
     const { register } = useAuth();
@@ -20,7 +23,7 @@ function Register() {
         // So we can pass a plain object with the file objects.
 
         const data = {
-            fullName,
+            fullname: fullName,
             email,
             username,
             password,
@@ -30,10 +33,11 @@ function Register() {
 
         try {
             await register(data);
+            toast.success('Registration successful! Please login.');
             navigate('/login');
         } catch (error) {
-            console.error('Registration failed', error);
-            alert('Registration failed');
+            setError(error.response?.data?.message || 'Registration failed');
+            toast.error(error.response?.data?.message || 'Registration failed');
         }
     };
 

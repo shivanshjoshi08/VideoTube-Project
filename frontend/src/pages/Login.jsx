@@ -2,14 +2,18 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
+import toast from 'react-hot-toast';
+
 function Login() {
     const [identifier, setIdentifier] = useState(''); // Stores email or username
     const [password, setPassword] = useState('');
+    const [error, setError] = useState(''); // State for error messages
     const navigate = useNavigate();
     const { login } = useAuth();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setError(''); // Clear previous errors
         try {
             // Backend checks $or: [{ username }, { email }]
             // Sending the same value for both allows login by either.
@@ -19,14 +23,16 @@ function Login() {
                 password
             });
 
-            if (response.data.data.accessToken) {
+            if (response?.data?.data?.accessToken) {
                 localStorage.setItem('accessToken', response.data.data.accessToken);
                 localStorage.setItem('refreshToken', response.data.data.refreshToken);
             }
+            toast.success('Login successful!');
             navigate('/');
         } catch (error) {
             console.error('Login failed', error);
-            alert('Login failed');
+            setError(error.response?.data?.message || 'Login failed');
+            toast.error(error.response?.data?.message || 'Login failed');
         }
     };
 
@@ -52,6 +58,14 @@ function Login() {
                 />
                 <button type="submit" className="btn-primary">Login</button>
             </form>
+            <p className="mt-4 text-center">
+                Don't have an account? <span
+                    onClick={() => navigate('/register')}
+                    style={{ cursor: 'pointer', color: 'blue', textDecoration: 'underline' }}
+                >
+                    Register
+                </span>
+            </p>
         </div>
     );
 }
