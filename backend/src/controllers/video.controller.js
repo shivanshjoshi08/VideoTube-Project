@@ -5,7 +5,6 @@ import { asyncHandler } from "../utils/asyncHandler.js"
 import { uploadOnCloudinary } from "../utils/cloudinary.js"
 import { getWatchHistory } from "./user.controller.js"
 import { User } from "../models/user.model.js";
-import api from "../../../frontend/src/utils/api.js"
 import mongoose from "mongoose"
 
 const getAllVideos = asyncHandler(async (req, res) => {
