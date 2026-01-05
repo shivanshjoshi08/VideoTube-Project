@@ -57,9 +57,16 @@ function Navbar() {
 
             <div className="navbar-end">
                 {currentUser ? (
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        <span>{currentUser.username}</span>
-                        <button onClick={handleLogout}>Logout</button>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                            <img
+                                src={currentUser.avatar || "https://via.placeholder.com/150"}
+                                alt="avatar"
+                                className="nav-avatar"
+                            />
+                            <span style={{ fontWeight: '500' }}>{currentUser.username}</span>
+                        </div>
+                        <button onClick={handleLogout} className="btn-secondary" style={{ padding: '0.4rem 1rem', fontSize: '0.9rem' }}>Logout</button>
                     </div>
                 ) : (
                     <div style={{ display: 'flex', gap: '15px' }}>

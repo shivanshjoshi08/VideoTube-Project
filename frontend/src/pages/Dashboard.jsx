@@ -27,6 +27,10 @@ function Dashboard() {
     const [newTweetContent, setNewTweetContent] = useState('');
     const [editingTweet, setEditingTweet] = useState(null); // { id, content }
 
+    // Preview States
+    const [avatarPreview, setAvatarPreview] = useState(null);
+    const [coverPreview, setCoverPreview] = useState(null);
+
     useEffect(() => {
         if (user?._id) {
             fetchChannelStats();
@@ -156,27 +160,57 @@ function Dashboard() {
         }
     };
 
+    const handleAvatarSelect = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setAvatar(file);
+            setAvatarPreview(URL.createObjectURL(file));
+        }
+    };
+
+    const handleCancelAvatar = () => {
+        setAvatar(null);
+        setAvatarPreview(null);
+    };
+
     const handleUpdateAvatar = async (e) => {
         e.preventDefault();
         try {
             await authService.updateAvatar(avatar);
-            alert('Avatar updated successfully');
+            toast.success('Avatar updated successfully');
+            setAvatar(null);
+            setAvatarPreview(null);
             fetchCurrentUser();
         } catch (error) {
             console.error('Error updating avatar', error);
-            alert('Failed to update avatar');
+            toast.error('Failed to update avatar');
         }
+    };
+
+    const handleCoverSelect = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setCoverImage(file);
+            setCoverPreview(URL.createObjectURL(file));
+        }
+    };
+
+    const handleCancelCover = () => {
+        setCoverImage(null);
+        setCoverPreview(null);
     };
 
     const handleUpdateCover = async (e) => {
         e.preventDefault();
         try {
             await authService.updateCoverImage(coverImage);
-            alert('Cover image updated successfully');
+            toast.success('Cover image updated successfully');
+            setCoverImage(null);
+            setCoverPreview(null);
             fetchCurrentUser();
         } catch (error) {
             console.error('Error updating cover image', error);
-            alert('Failed to update cover image');
+            toast.error('Failed to update cover image');
         }
     };
 
@@ -238,10 +272,36 @@ function Dashboard() {
     return (
         <div className="dashboard-container">
             <div className="dashboard-header">
-                <h1>📊 My Dashboard</h1>
+                {/* Profile Header Block */}
+                <div className="profile-header">
+                    <div className="cover-image-container">
+                        <img
+                            src={user?.coverImage || "https://images.unsplash.com/photo-1707343843437-caacff5cfa74?q=80&w=2675&auto=format&fit=crop"}
+                            alt="Cover"
+                            className="cover-image"
+                        />
+                    </div>
+                    <div className="profile-info-overlay">
+                        <img
+                            src={user?.avatar || "https://via.placeholder.com/150"}
+                            alt="avatar"
+                            className="profile-avatar-large"
+                        />
+                        <div className="profile-text">
+                            <h1 className="profile-name">{user?.fullname}</h1>
+                            <p className="profile-username">@{user?.username}</p>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <div className="dashboard-tabs">
+                <button
+                    className={`tab-button ${activeTab === 'profile' ? 'active' : ''}`}
+                    onClick={() => setActiveTab('profile')}
+                >
+                    Profile
+                </button>
                 <button
                     className={`tab-button ${activeTab === 'videos' ? 'active' : ''}`}
                     onClick={() => setActiveTab('videos')}
@@ -269,6 +329,42 @@ function Dashboard() {
             </div>
 
             <div className="tab-content">
+                {activeTab === 'profile' && (
+                    <div className="profile-details-card">
+                        <div className="profile-card-header">
+                            <h2>My Profile</h2>
+                            <p style={{ color: 'var(--text-muted)' }}>Manage your personal information</p>
+                        </div>
+
+                        <div className="profile-details-grid">
+                            <div className="detail-item">
+                                <span className="detail-label">Full Name</span>
+                                <div className="detail-value">{user?.fullname}</div>
+                            </div>
+                            <div className="detail-item">
+                                <span className="detail-label">Username</span>
+                                <div className="detail-value">@{user?.username}</div>
+                            </div>
+                            <div className="detail-item">
+                                <span className="detail-label">Email Address</span>
+                                <div className="detail-value">{user?.email}</div>
+                            </div>
+                            <div className="detail-item">
+                                <span className="detail-label">Joined On</span>
+                                <div className="detail-value">
+                                    {user?.createdAt ? new Date(user.createdAt).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' }) : 'N/A'}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style={{ marginTop: '2rem', display: 'flex', justifyContent: 'flex-end' }}>
+                            <button onClick={() => setActiveTab('settings')} className="btn-secondary">
+                                ✏️ Edit Profile
+                            </button>
+                        </div>
+                    </div>
+                )}
+
                 {activeTab === 'videos' && (
                     <div>
                         {stats && (
@@ -416,26 +512,66 @@ function Dashboard() {
                             )}
 
                             {settingsTab === 'images' && (
-                                <div className="image-update-section">
-                                    <form onSubmit={handleUpdateAvatar}>
-                                        <h3>Update Avatar</h3>
-                                        <img src={user?.avatar} alt="Current Avatar" style={{ width: '100px', height: '100px', borderRadius: '50%', objectFit: 'cover' }} />
-                                        <input
-                                            type="file"
-                                            onChange={(e) => setAvatar(e.target.files[0])}
-                                        />
-                                        <button type="submit" className="btn-primary">Update Avatar</button>
-                                    </form>
-                                    <hr style={{ margin: '2rem 0', borderColor: 'var(--border-color)' }} />
-                                    <form onSubmit={handleUpdateCover}>
-                                        <h3>Update Cover Image</h3>
-                                        {user?.coverImage && <img src={user.coverImage} alt="Current Cover" style={{ width: '100%', height: '150px', objectFit: 'cover', borderRadius: '8px' }} />}
-                                        <input
-                                            type="file"
-                                            onChange={(e) => setCoverImage(e.target.files[0])}
-                                        />
-                                        <button type="submit" className="btn-primary">Update Cover Image</button>
-                                    </form>
+                                <div className="image-upload-section">
+                                    {/* Avatar Upload Group */}
+                                    <div className="upload-group">
+                                        <h3>Profile Avatar</h3>
+                                        <div className="preview-container">
+                                            <img
+                                                src={avatarPreview || user?.avatar || "https://via.placeholder.com/150"}
+                                                alt="Avatar Preview"
+                                                className="avatar-preview"
+                                            />
+                                        </div>
+
+                                        <div className="action-buttons" style={{ justifyContent: 'center' }}>
+                                            {!avatarPreview ? (
+                                                <div className="file-input-wrapper">
+                                                    <button className="btn-upload-select">Select New Avatar</button>
+                                                    <input
+                                                        type="file"
+                                                        onChange={handleAvatarSelect}
+                                                        accept="image/*"
+                                                    />
+                                                </div>
+                                            ) : (
+                                                <>
+                                                    <button onClick={handleUpdateAvatar} className="btn-primary">Save Change</button>
+                                                    <button onClick={handleCancelAvatar} className="btn-secondary">Cancel</button>
+                                                </>
+                                            )}
+                                        </div>
+                                    </div>
+
+                                    {/* Cover Image Upload Group */}
+                                    <div className="upload-group">
+                                        <h3>Cover Image</h3>
+                                        <div className="preview-container">
+                                            <img
+                                                src={coverPreview || user?.coverImage || "https://images.unsplash.com/photo-1707343843437-caacff5cfa74?q=80&w=2675&auto=format&fit=crop"}
+                                                alt="Cover Preview"
+                                                className="cover-preview"
+                                            />
+                                        </div>
+
+                                        <div className="action-buttons" style={{ justifyContent: 'center' }}>
+                                            {!coverPreview ? (
+                                                <div className="file-input-wrapper">
+                                                    <button className="btn-upload-select">Select New Cover</button>
+                                                    <input
+                                                        type="file"
+                                                        onChange={handleCoverSelect}
+                                                        accept="image/*"
+                                                    />
+                                                </div>
+                                            ) : (
+                                                <>
+                                                    <button onClick={handleUpdateCover} className="btn-primary">Save Change</button>
+                                                    <button onClick={handleCancelCover} className="btn-secondary">Cancel</button>
+                                                </>
+                                            )}
+                                        </div>
+                                    </div>
                                 </div>
                             )}
 
