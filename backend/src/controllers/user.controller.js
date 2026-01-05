@@ -128,7 +128,8 @@ const loginUser = asyncHandler(async (req, res) => {
     // send cookies
     const options = {
         httpOnly: true,
-        secure: true
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "none"
     }
     return res
         .status(200)
@@ -160,7 +161,8 @@ const logOutUser = asyncHandler(async (req, res) => {
 
     const options = {
         httpOnly: true,
-        secure: true
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "none"
     }
 
     return res
@@ -197,7 +199,8 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
 
         const options = {
             httpOnly: true,
-            secure: true
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "none"
         }
 
         const { accessToken, newRefreshToken } = await generateAccessAndRefreshToken(user._id)
@@ -382,7 +385,7 @@ const getUserChannelProfile = asyncHandler(async (req, res) => {
                 }
             }
         },
-        { 
+        {
             $project: {
                 fullname: 1,
                 username: 1,
