@@ -69,6 +69,19 @@ a:hover {
   min-height: 100vh;
 }
 
+/* .main-content grows and allows child pages to control their own widths */
+.main-content {
+  flex: 1;
+  width: 100%;
+}
+
+/* When landing page is inside, break out of app-container constraints */
+.app-container:has(.landing-page) {
+  max-width: 100%;
+  padding: 0;
+}
+
+
 /* Navbar - Clean & Floating */
 .navbar {
   display: flex;
@@ -229,6 +242,31 @@ button:hover,
   width: 100%;
   margin-top: 1rem;
 }
+
+/* Secondary button — ghost style */
+.btn-secondary {
+  padding: 0.75rem 1.5rem;
+  background: rgba(255, 255, 255, 0.07);
+  color: var(--text-main);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+  font-family: var(--font-main);
+}
+.btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.14);
+  transform: translateY(-1px);
+}
+
+/* Allow landing page sections to be full-width */
+.main-content:has(.landing-page) {
+  max-width: 100%;
+  padding: 0;
+  width: 100%;
+}
+
 
 /* Video Cards */
 .video-grid {
